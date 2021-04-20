@@ -1,0 +1,22 @@
+{
+    "name": "Crypto Tracker",
+    "short_name": "Crypto Tracker",
+    "theme_color": "#5fc1cb",
+    "background_color": "#69a4d2",
+    "display": "standalone",
+    "scope": "/IT202-Spring2021-BigProject/",
+    "start_url": "/IT202-Spring2021-BigProject/",
+    "description": "Crypto tracker platform for users to track their own investements.",
+    "icons": [
+        {
+            "src": "icons/largeIcon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/smallIcon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}
