@@ -2,3 +2,36 @@ body {
     margin-left: 0;
     margin-top: 0;
 }
+
+:root {
+    --mdc-theme-primary: black;
+}
+
+.mdc-drawer .mdc-list-item--activated {
+    color: black;
+}
+
+.mdc-drawer .mdc-list-item--activated .mdc-list-item__graphic {
+    color: black;
+}
+
+.container {
+    width: 70%;
+    margin: auto;
+    padding: 20px;
+}
+
+#bar-icon {
+    /* margin-left: 10px; */
+    /* margin-right: 12px; */
+}
+
+.bar-icon {
+    margin-right: 7px;
+    width: 24px;
+}
+
+.burger-no-ripple {
+    --mdc-ripple-fg-scale: 0 !important;
+}
+

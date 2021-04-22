@@ -21,12 +21,13 @@
         <div class="mdc-top-app-bar__row">
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
             <button id="nav-burgerbutton" class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button" aria-label="Open navigation menu">menu</button>
-            <span class="mdc-top-app-bar__title">Page title</span>
+            <span class="mdc-top-app-bar__title">Crypto Tracker</span>
+            <!-- <div id="bar-icon" class="material-icons" aria-label="Timeline">timeline</div> -->
           </section>
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Favorite">favorite</button>
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search">search</button>
-            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">more_vert</button>
+            <div id="bar-icon" class="material-icons bar-icon" aria-label="Home">home</div>
+            <!-- <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search">search</button>
+            <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">more_vert</button> -->
           </section>
         </div>
       </header>
@@ -34,22 +35,22 @@
       <aside class="mdc-drawer mdc-drawer--modal">
         <div class="mdc-drawer__content">
           <nav class="mdc-list">
-            <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page" tabindex="0">
+            <a id="home-button" class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page" tabindex="0">
                 <span class="mdc-list-item__ripple"></span>
                 <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
                 <span class="mdc-list-item__text">Home</span>
             </a>
-            <a class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page" tabindex="0">
+            <a id="news-button" class="mdc-list-item" href="#" aria-current="page">
               <span class="mdc-list-item__ripple"></span>
               <i class="material-icons mdc-list-item__graphic" aria-hidden="true">announcement</i>
               <span class="mdc-list-item__text">Crypto News</span>
             </a>
-            <a class="mdc-list-item" href="#">
+            <a id="trending-button" class="mdc-list-item" href="#">
               <span class="mdc-list-item__ripple"></span>
               <i class="material-icons mdc-list-item__graphic" aria-hidden="true">whatshot</i>
-              <span class="mdc-list-item__text">Hottest Crypto</span>
+              <span class="mdc-list-item__text">Trending Crypto</span>
             </a>
-            <a class="mdc-list-item" href="#">
+            <a id="investments-button" class="mdc-list-item" href="#">
               <span class="mdc-list-item__ripple"></span>
               <i class="material-icons mdc-list-item__graphic" aria-hidden="true">timeline</i>
               <span class="mdc-list-item__text">My Investments</span>
@@ -61,7 +62,9 @@
       <div class="mdc-drawer-scrim"></div>
 
       <main class="mdc-top-app-bar--fixed-adjust">
-        App content
+        <div class="container">
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptates voluptas similique, necessitatibus repellat fugiat magnam voluptatem quaerat consectetur odit ipsam tempora at. Dolore porro eaque laborum, quisquam aperiam odio temporibus?
+        </div>
       </main>
 
     <script>
