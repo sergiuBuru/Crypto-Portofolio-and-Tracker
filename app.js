@@ -37,6 +37,17 @@ newsButton.addEventListener("click", (event) => {
   container.innerHTML = "<h1>News</h1>"
   barIcon.innerHTML = "announcements";
   burgerButton.classList.add("burger-no-ripple");
+
+  const header = {
+    method: "GET",
+    mode: "cors"
+  };
+  const url = "https://cryptopanic.com/api/v1/posts/?auth_token=fc1c0da72515555999eb85b730a4a6a073ecf723";
+  fetch(url)
+    .then(data => data.json())
+    .then(news => {
+      console.log(news);
+    })
 });
 
 trendingButton.addEventListener("click", (event) => {
