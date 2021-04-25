@@ -82,3 +82,50 @@ body {
     margin-left: 3%;
     font-size: 16px;
 }
+
+
+.crypto-div {
+    width: 100%;
+    margin-top: 40px;
+}
+
+.crypto-div-title {
+    margin: 0;
+}
+.crypto-price-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0 0;
+    margin-top: 10px;
+}
+
+.crypto-usd-price {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.crypto-growth {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.crypto-curve {
+    width: 100%;
+    height: 500px;
+    margin-left: 10px;
+    padding: 0;
+}
+
+.price-increase {
+    color: rgb(25, 224, 81);
+}
+
+.price-decrease {
+    color: rgb(230, 14, 14);
+}

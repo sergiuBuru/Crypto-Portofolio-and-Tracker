@@ -33,6 +33,12 @@ const newsCardTemplate = `<div class="mdc-card__primary-action">
                                 <span class="mdc-button__label">Read article</span>
                               </a>
                           </div>`
+const trendingChartTemplate = `<div class="crypto-div-title border-bottom"></div>
+                               <div class="crypto-price-grid">
+                                 <div class="crypto-usd-price"></div>
+                                 <div class="crypto-growth"></div>
+                               </div>
+                              <div id="curve_chart" class="crypto-curve"></div>`
 
 
 
@@ -51,9 +57,10 @@ document.body.addEventListener('MDCDrawer:closed', () => {
 });
 
 drawerHomeButton.addEventListener("click", (event) => {
-  container.innerHTML = "<h1>Home</h1>"
   barIcon.innerHTML = "home";
   hamburgerButton.classList.add("burger-no-ripple");
+
+
 });
 
 drawerNewsButton.addEventListener("click", (event) => {
@@ -68,6 +75,7 @@ drawerNewsButton.addEventListener("click", (event) => {
   .then(news => {
     container.appendChild(newsGrid);
     let nIndex = 0;
+    shuffleArray(news.data);
     for(let i = 1; i < 4; i++) {
       for(let j = 1; j < 3; j++) {
         //Put each pice of news in its own card on the grid
@@ -89,14 +97,23 @@ drawerNewsButton.addEventListener("click", (event) => {
 });
 
 drawerTrendingButton.addEventListener("click", (event) => {
-  container.innerHTML = "<h1>trending</h1>";
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
+  removeAllChildNodes(container);
 
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
-    .then(trendingCrypto => {
-      console.log(trendingCrypto);
+    .then(trendingCryptos => {
+      trendingCryptos.coins.forEach(crypto => {
+        //For each trending coin fetch the price over the last 14 days
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.item.id}/market_chart?vs_currency=usd&days=14&interval=daily`)
+          .then(response => response.json())
+          .then(data => {
+            if(data.prices.length < 13) { return;}
+            drawChart(data.prices, crypto.item);
+          })
+
+      });
     })
 });
 
@@ -113,4 +130,58 @@ const removeAllChildNodes = function(parent) {
   while (parent.firstChild) {
       parent.removeChild(parent.firstChild);
   }
+}
+//Credit: https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
+const shuffleArray = function(array) {
+  for(let i = array.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * i)
+    const temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
+
+function drawChart(coinPrices, coin) {
+  //Create the chart div element for each crypto
+  let chartDiv = document.createElement("div");
+  chartDiv.classList.add("crypto-div", "shadow", "p-3", "rounded");
+  chartDiv.innerHTML = trendingChartTemplate;
+  chartDiv.querySelector(".crypto-div-title").innerHTML = `${coin.name} (${coin.symbol})`;
+  let currentPrice = coinPrices[coinPrices.length-1][1];
+  let firstPrice = coinPrices[0][1];
+  let change = ((currentPrice - firstPrice) / firstPrice) * 100;
+  chartDiv.querySelector(".crypto-usd-price").innerHTML = `$${currentPrice.toFixed(2)} USD`;
+  chartDiv.querySelector(".crypto-growth").innerHTML = `${change.toFixed(2)}%`;
+  let color = (change < 0) ? ("price-decrease") : ("price-increase");
+  chartDiv.querySelector(".crypto-growth").classList.add(color);  
+  container.appendChild(chartDiv);
+
+  let dataArray = [
+    ['Date', 'Price'],
+  ]
+  coinPrices.forEach(price => {
+    dataArray.push([formatDate(price[0]), price[1]])
+  });
+
+  let options = {
+    width: 650,
+    height: 500,
+    color: '#000000',
+    chartArea: {'width': '90%', 'height': '80%'},
+    legend: { position: 'bottom' }
+  };
+
+  let chart = new google.visualization.LineChart(chartDiv.querySelector("#curve_chart"));
+
+  let data = google.visualization.arrayToDataTable(dataArray);
+  chart.draw(data, options);
+}
+
+//Given a unix timestamp output the date in "Month day year format"
+const formatDate = function(timestamp) {
+  let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  let d = new Date(timestamp);
+  let day = d.getDate();
+  let month = months[d.getMonth()]
+  return month + " " + day;
 }
