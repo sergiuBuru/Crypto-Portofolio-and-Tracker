@@ -127,7 +127,7 @@ window.addEventListener('deviceorientation', (event) => {
   console.log(event.gamma);
   if(event.gamma >= 15) {
     drawer.open = true;
-  } else if(drawer.open == true && event.gamma < 15) {
+  } else if(drawer.open == true && event.gamma < 2) {
     drawer.open = false;
   }
 }, true);
