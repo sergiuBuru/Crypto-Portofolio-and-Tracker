@@ -84,6 +84,15 @@ body {
     font-size: 16px;
 }
 
+.news-card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    top: 0;
+}
+.news-card:hover {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+    top: -3px;
+}
+
 
 .crypto-div {
     width: 705px;
@@ -93,6 +102,13 @@ body {
     margin-left: auto;
     margin-right: auto;
     background-color: white;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    padding: 1rem !important;
+    border-radius: 0.25rem !important;
+}
+
+.crypto-div:hover {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
 }
 
 .crypto-div-title {

@@ -3,7 +3,7 @@ const topAppBarElement = document.querySelector('.mdc-top-app-bar');
 const nav = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
 const drawer = mdc.drawer.MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
 const listEl = document.querySelector('.mdc-drawer .mdc-list');
-// const mainContentEl = document.querySelector('main');
+const mainContentEl = document.querySelector('main');
 // const drawerScrim = document.querySelector(".mdc-drawer-scrim");
 const hamburgerButton = document.querySelector("#nav-burgerbutton");
 const drawerHomeButton = document.querySelector("#home-button");
@@ -53,7 +53,7 @@ listEl.addEventListener('click', (event) => {
 });
 
 document.body.addEventListener('MDCDrawer:closed', () => {
-  //mainContentEl.querySelector('input, button').focus();
+  // mainContentEl.querySelector('input, button').focus();
 });
 
 drawerHomeButton.addEventListener("click", (event) => {
@@ -81,7 +81,7 @@ drawerNewsButton.addEventListener("click", (event) => {
         //Put each pice of news in its own card on the grid
         let card = document.createElement("div");
         let newsObj = news.data[nIndex];
-        card.classList.add(`mdc-card`, `shadow`,`news-grid-item${nIndex+1}`);
+        card.classList.add(`mdc-card`, `news-card`,`news-grid-item${nIndex+1}`);
         card.innerHTML = newsCardTemplate;
         card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
         card.querySelector(".card-title").innerHTML = newsObj.title;
@@ -91,7 +91,6 @@ drawerNewsButton.addEventListener("click", (event) => {
         card.querySelector(".mdc-card__action--button").href = newsObj.url
         newsGrid.appendChild(card);
         nIndex += 1;
-        console.log("here");
       }
     }
   })
@@ -107,7 +106,7 @@ drawerTrendingButton.addEventListener("click", (event) => {
     .then(trendingCryptos => {
       trendingCryptos.coins.forEach(crypto => {
         //For each trending coin fetch the price over the last 14 days
-        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.item.id}/market_chart?vs_currency=usd&days=14&interval=daily`)
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.item.id}/market_chart?vs_currency=usd&days=14&interval=hourly`)
           .then(response => response.json())
           .then(data => {
             if(data.prices.length < 13) { return;}
@@ -123,6 +122,15 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "timeline";
   hamburgerButton.classList.add("burger-no-ripple");
 });
+
+window.addEventListener('deviceorientation', (event) => {
+  console.log(event.gamma);
+  if(event.gamma >= 15) {
+    drawer.open = true;
+  } else if(drawer.open == true && event.gamma < 15) {
+    drawer.open = false;
+  }
+}, true);
 
 
 //HELPER FUNCTIONS
@@ -145,7 +153,7 @@ const shuffleArray = function(array) {
 function drawChart(coinPrices, coin) {
   //Create the chart div element for each crypto
   let chartDiv = document.createElement("div");
-  chartDiv.classList.add("crypto-div", "shadow-lg", "p-3", "rounded");
+  chartDiv.classList.add("crypto-div");
   chartDiv.innerHTML = trendingChartTemplate;
   chartDiv.querySelector(".crypto-div-title").innerHTML = `${coin.name} (${coin.symbol})`;
   let currentPrice = coinPrices[coinPrices.length-1][1];
