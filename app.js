@@ -81,7 +81,7 @@ drawerNewsButton.addEventListener("click", (event) => {
         //Put each pice of news in its own card on the grid
         let card = document.createElement("div");
         let newsObj = news.data[nIndex];
-        card.classList.add(`mdc-card`, `news-grid-item${nIndex+1}`);
+        card.classList.add(`mdc-card`, `shadow`,`news-grid-item${nIndex+1}`);
         card.innerHTML = newsCardTemplate;
         card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
         card.querySelector(".card-title").innerHTML = newsObj.title;
@@ -91,6 +91,7 @@ drawerNewsButton.addEventListener("click", (event) => {
         card.querySelector(".mdc-card__action--button").href = newsObj.url
         newsGrid.appendChild(card);
         nIndex += 1;
+        console.log("here");
       }
     }
   })
@@ -144,7 +145,7 @@ const shuffleArray = function(array) {
 function drawChart(coinPrices, coin) {
   //Create the chart div element for each crypto
   let chartDiv = document.createElement("div");
-  chartDiv.classList.add("crypto-div", "shadow", "p-3", "rounded");
+  chartDiv.classList.add("crypto-div", "shadow-lg", "p-3", "rounded");
   chartDiv.innerHTML = trendingChartTemplate;
   chartDiv.querySelector(".crypto-div-title").innerHTML = `${coin.name} (${coin.symbol})`;
   let currentPrice = coinPrices[coinPrices.length-1][1];
@@ -167,6 +168,7 @@ function drawChart(coinPrices, coin) {
     width: 650,
     height: 500,
     color: '#000000',
+    chartArea: {backgroundColor: 'white'},
     chartArea: {'width': '90%', 'height': '80%'},
     legend: { position: 'bottom' }
   };
