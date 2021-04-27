@@ -40,6 +40,14 @@ const trendingChartTemplate = `<div class="crypto-div-title border-bottom"></div
                                </div>
                               <div id="curve_chart" class="crypto-curve"></div>`
 
+const addCryptoButton = document.createElement("button");
+addCryptoButton.id = "add-crypto-button";
+addCryptoButton.classList.add("mdc-fab");
+addCryptoButton.innerHTML = `<div class="mdc-fab__ripple"></div>
+                             <span class="mdc-fab__icon material-icons">add</span>`;
+
+const screenCover = document.createElement("div");
+screenCover.classList.add("screen-cover");
 
 
 //EVENT HANDLERS
@@ -57,10 +65,9 @@ document.body.addEventListener('MDCDrawer:closed', () => {
 });
 
 drawerHomeButton.addEventListener("click", (event) => {
+  removeAllChildNodes(container);
   barIcon.innerHTML = "home";
   hamburgerButton.classList.add("burger-no-ripple");
-
-
 });
 
 drawerNewsButton.addEventListener("click", (event) => {
@@ -121,6 +128,12 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   container.innerHTML = "<h1>investments</h1>";
   barIcon.innerHTML = "timeline";
   hamburgerButton.classList.add("burger-no-ripple");
+  removeAllChildNodes(container);
+  container.appendChild(addCryptoButton);
+});
+
+addCryptoButton.addEventListener("click", (event) => {
+  document.body.prepend(screenCover);
 });
 
 window.addEventListener('deviceorientation', (event) => {
@@ -130,6 +143,9 @@ window.addEventListener('deviceorientation', (event) => {
   }
 }, true);
 
+screenCover.addEventListener("click", (event) => {
+  document.body.removeChild(screenCover);
+})
 
 //HELPER FUNCTIONS
 //Credit: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/

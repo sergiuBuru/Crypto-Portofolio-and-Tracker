@@ -1,6 +1,7 @@
-body {
+html, body {
     margin-left: 0;
     margin-top: 0;
+    height: 100%;
     /* background-color:cadetblue; */
 }
 
@@ -18,7 +19,9 @@ body {
 
 .container {
     width: 70%;
-    margin: auto;
+    height: 90%;
+    margin-left: auto;
+    margin-right: auto;
     padding: 20px;
 }
 
@@ -151,3 +154,27 @@ body {
 .price-decrease {
     color: rgb(230, 14, 14);
 }
+
+#add-crypto-button {
+    bottom: 10px;    
+    position: fixed !important;
+    z-index: 3;
+    margin-left: 32.5%;
+}
+
+.screen-cover {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0,0,0,0.32);
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+}
+
+
+
+main {
+    /* height: 100%; */
+}
+
