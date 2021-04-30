@@ -3,9 +3,16 @@
         width: 705px;
         height: 591px;
     }
+
+    .container {
+        width: 70%;
+        height: 90%;
+    }
 }
 
-/* @media only screen and (max-width: 1099) and (min:width: ) */
+@media only screen and (max-width: 1099) and (min:width: 500) {
+
+}
 
 html, body {
     margin-left: 0;

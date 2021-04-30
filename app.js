@@ -16,7 +16,7 @@ const barIcon = document.querySelector("#bar-icon");
 const newsGrid = document.createElement("div");
 newsGrid.classList.add("news-grid");
 
-container.innerHTML = window.innerWidth;
+// container.innerHTML = window.innerWidth;
 
 
 //API ENDPOINTS
