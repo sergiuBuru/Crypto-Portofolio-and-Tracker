@@ -1,3 +1,5 @@
+document.body.innerHTML = window.width;
+
 //HTML ELEMENTS, VARIABLES AND INSTANTIATIONS
 const topAppBarElement = document.querySelector('.mdc-top-app-bar');
 const nav = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
@@ -48,6 +50,9 @@ addCryptoButton.innerHTML = `<div class="mdc-fab__ripple"></div>
 
 const screenCover = document.createElement("div");
 screenCover.classList.add("screen-cover");
+
+const cryptoForm = document.createElement("div");
+cryptoForm.classList.add("crypto-form");
 
 
 //EVENT HANDLERS
@@ -107,7 +112,7 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-
+  container.appendChild(addCryptoButton);
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
@@ -129,11 +134,12 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "timeline";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  container.appendChild(addCryptoButton);
+  
 });
 
 addCryptoButton.addEventListener("click", (event) => {
   document.body.prepend(screenCover);
+  //container.appendChild(cryptoForm);
 });
 
 window.addEventListener('deviceorientation', (event) => {
@@ -187,8 +193,8 @@ function drawChart(coinPrices, coin) {
   });
 
   let options = {
-    width: 650,
-    height: 500,
+    // width: 650,
+    // height: 500,
     color: '#000000',
     chartArea: {backgroundColor: 'white'},
     chartArea: {'width': '90%', 'height': '80%'},
