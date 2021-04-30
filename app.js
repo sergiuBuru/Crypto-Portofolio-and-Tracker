@@ -165,9 +165,9 @@ screenCover.addEventListener("click", (event) => {
   document.body.removeChild(screenCover);
 })
 
-window.onload = function() {
-  screen.orientation.lock();
-}
+// window.onload = function() {
+//   screen.orientation.lock("landscape");
+// }
 
 //HELPER FUNCTIONS
 //Credit: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/
