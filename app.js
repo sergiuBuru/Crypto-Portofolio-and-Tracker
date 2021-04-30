@@ -114,7 +114,7 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  container.appendChild(addCryptoButton);
+  document.body.appendChild(addCryptoButton);
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
@@ -165,6 +165,10 @@ screenCover.addEventListener("click", (event) => {
   document.body.removeChild(screenCover);
 })
 
+window.onload = function() {
+  screen.orientation.lock();
+}
+
 //HELPER FUNCTIONS
 //Credit: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/
 const removeAllChildNodes = function(parent) {
@@ -212,7 +216,7 @@ function drawChart(coinPrices, coin) {
     color: '#000000',
     chartArea: {backgroundColor: 'white'},
     chartArea: {
-                width: '90%', 
+                width: '80%', 
                 height: '80%'
                },
     legend: { position: 'bottom' }
