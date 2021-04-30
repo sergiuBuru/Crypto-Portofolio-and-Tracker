@@ -119,11 +119,21 @@ drawerTrendingButton.addEventListener("click", (event) => {
     .then(response => response.json())
     .then(trendingCryptos => {
       trendingCryptos.coins.forEach(crypto => {
-        //For each trending coin fetch the price over the last 14 days
-        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.item.id}/market_chart?vs_currency=usd&days=14&interval=hourly`)
+        //For each trending coin fetch the price over the last 14 days\
+        let days;
+        let interval = (window.innerWidth < 700) ? ("hourly") : ("daily");
+        
+        if(window.innerWidth < 700) {
+          days = 7;
+          interval = "daily";
+        } else {
+          days = 14;
+          interval = "hourly";
+        }
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.item.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
           .then(response => response.json())
           .then(data => {
-            if(data.prices.length < 13) { return;}
+            if(data.prices.length < (days - 1)) { return;}
             drawChart(data.prices, crypto.item);
           })
 
@@ -194,12 +204,17 @@ function drawChart(coinPrices, coin) {
     dataArray.push([formatDate(price[0]), price[1]])
   });
 
+  console.log("");
+
   let options = {
-    // width: 650,
-    // height: 500,
+    // width: chartDiv.offsetWidth,
+    // height: .7 * chartDiv.offsetHeight,
     color: '#000000',
     chartArea: {backgroundColor: 'white'},
-    chartArea: {'width': '90%', 'height': '80%'},
+    chartArea: {
+                width: '90%', 
+                height: '80%'
+               },
     legend: { position: 'bottom' }
   };
 
