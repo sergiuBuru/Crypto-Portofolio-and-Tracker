@@ -1,4 +1,3 @@
-document.body.innerHTML = window.width;
 
 //HTML ELEMENTS, VARIABLES AND INSTANTIATIONS
 const topAppBarElement = document.querySelector('.mdc-top-app-bar');
@@ -16,6 +15,9 @@ const container = document.querySelector(".container");
 const barIcon = document.querySelector("#bar-icon");
 const newsGrid = document.createElement("div");
 newsGrid.classList.add("news-grid");
+
+container.innerHTML = window.innerWidth;
+
 
 //API ENDPOINTS
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
