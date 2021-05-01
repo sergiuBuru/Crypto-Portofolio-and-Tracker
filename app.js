@@ -114,7 +114,10 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  document.body.appendChild(addCryptoButton);
+  let buttonWrapper = document.createElement("div");
+  buttonWrapper.classList.add("crypto-button-wrapper");
+  buttonWrapper.appendChild(addCryptoButton);
+  document.body.appendChild(buttonWrapper);
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
