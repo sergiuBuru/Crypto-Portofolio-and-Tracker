@@ -16,7 +16,6 @@ const barIcon = document.querySelector("#bar-icon");
 const newsGrid = document.createElement("div");
 newsGrid.classList.add("news-grid");
 
-
 //API ENDPOINTS
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
 const LUNARCRUSH_FEED_URL = "https://api.lunarcrush.com/v2?data=feeds&sources=news&key=25wd02gbkx519y03yeha2f";
@@ -42,13 +41,79 @@ const trendingChartTemplate = `<div class="crypto-div-title border-bottom"></div
                                </div>
                               <div id="curve_chart" class="crypto-curve"></div>`
 
+const selectTemplate = `
+                          <div class="mdc-select__anchor"
+                              role="button"
+                              aria-haspopup="listbox"
+                              aria-expanded="false"
+                              aria-labelledby="demo-label demo-selected-text">
+                            <span class="mdc-select__ripple"></span>
+                            <span id="demo-label" class="mdc-floating-label">Pick the crypto</span>
+                            <span class="mdc-select__selected-text-container">
+                              <span id="demo-selected-text" class="mdc-select__selected-text"></span>
+                            </span>
+                            <span class="mdc-select__dropdown-icon">
+                              <svg
+                                  class="mdc-select__dropdown-icon-graphic"
+                                  viewBox="7 10 10 5" focusable="false">
+                                <polygon
+                                    class="mdc-select__dropdown-icon-inactive"
+                                    stroke="none"
+                                    fill-rule="evenodd"
+                                    points="7 10 12 15 17 10">
+                                </polygon>
+                                <polygon
+                                    class="mdc-select__dropdown-icon-active"
+                                    stroke="none"
+                                    fill-rule="evenodd"
+                                    points="7 15 12 10 17 15">
+                                </polygon>
+                              </svg>
+                            </span>
+                            <span class="mdc-line-ripple"></span>
+                          </div>
 
+                          <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                            <ul class="mdc-list" role="listbox" aria-label="Crypto picker listbox">
+                            </ul>
+                          </div>`;
+
+const searchbuttonTemplate = `<span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Search</span>
+                        <span class="mdc-button__touch"></span>`;
+
+const addbuttonTemplate = `<span class="mdc-button__ripple"></span>
+                        <span class="mdc-button__label">Add Crypto</span>
+                        <span class="mdc-button__touch"></span>`;
+
+const textfieldTemplate = `<span class="mdc-text-field__ripple"></span>
+                           <span class="mdc-floating-label" id="my-label-id">Crypto Name</span>
+                           <input class="mdc-text-field__input" type="text" aria-labelledby="my-label-id">
+                           <span class="mdc-line-ripple"></span>`;
+
+
+//ELEMENTS                      
 const screenCover = document.createElement("div");
 screenCover.classList.add("screen-cover");
 
 const cryptoForm = document.createElement("div");
 cryptoForm.classList.add("crypto-form");
 
+const cryptoFormTextfield = document.createElement("label");
+cryptoFormTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-textfield");
+cryptoFormTextfield.innerHTML = textfieldTemplate;
+
+const cryptoFormSearchbutton = document.createElement("button");
+cryptoFormSearchbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-searchbutton");
+cryptoFormSearchbutton.innerHTML = searchbuttonTemplate;
+
+const cryptoFormSelect = document.createElement("div");
+cryptoFormSelect.classList.add("mdc-select", "mdc-select--filled", "demo-width-class");
+cryptoFormSelect.innerHTML = selectTemplate;
+
+const cryptoFormAddbutton = document.createElement("button");
+cryptoFormAddbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-addbutton");
+cryptoFormAddbutton.innerHTML = addbuttonTemplate;
 
 //EVENT HANDLERS
 hamburgerButton.addEventListener("click", (event) => {
@@ -65,9 +130,23 @@ document.body.addEventListener('MDCDrawer:closed', () => {
 });
 
 drawerAddButton.addEventListener("click", (event) => {
-  removeAllChildNodes(container);
   barIcon.innerHTML = "add";
   hamburgerButton.classList.add("burger-no-ripple");
+  removeAllChildNodes(container);
+
+  container.appendChild(cryptoForm);
+
+  cryptoForm.appendChild(cryptoFormTextfield);
+  const textField = new mdc.textField.MDCTextField(document.querySelector(".mdc-text-field"));
+  
+  cryptoForm.appendChild(cryptoFormSearchbutton);
+  const searchButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-searchbutton"));
+
+  cryptoForm.appendChild(cryptoFormSelect);
+  const select = new mdc.select.MDCSelect(document.querySelector(".mdc-select"));
+
+  cryptoForm.appendChild(cryptoFormAddbutton);
+  const addButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-addbutton"));
 });
 
 drawerNewsButton.addEventListener("click", (event) => {
