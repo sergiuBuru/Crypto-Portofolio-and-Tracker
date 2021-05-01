@@ -7,7 +7,7 @@ const listEl = document.querySelector('.mdc-drawer .mdc-list');
 const mainContentEl = document.querySelector('main');
 // const drawerScrim = document.querySelector(".mdc-drawer-scrim");
 const hamburgerButton = document.querySelector("#nav-burgerbutton");
-const drawerHomeButton = document.querySelector("#home-button");
+const drawerAddButton = document.querySelector("#home-button");
 const drawerNewsButton = document.querySelector("#news-button");
 const drawerTrendingButton = document.querySelector("#trending-button");
 const drawerInvestmentsButton = document.querySelector("#investments-button");
@@ -15,8 +15,6 @@ const container = document.querySelector(".container");
 const barIcon = document.querySelector("#bar-icon");
 const newsGrid = document.createElement("div");
 newsGrid.classList.add("news-grid");
-
-// container.innerHTML = window.innerWidth;
 
 
 //API ENDPOINTS
@@ -44,11 +42,6 @@ const trendingChartTemplate = `<div class="crypto-div-title border-bottom"></div
                                </div>
                               <div id="curve_chart" class="crypto-curve"></div>`
 
-const addCryptoButton = document.createElement("button");
-addCryptoButton.id = "add-crypto-button";
-addCryptoButton.classList.add("mdc-fab");
-addCryptoButton.innerHTML = `<div class="mdc-fab__ripple"></div>
-                             <span class="mdc-fab__icon material-icons">add</span>`;
 
 const screenCover = document.createElement("div");
 screenCover.classList.add("screen-cover");
@@ -71,9 +64,9 @@ document.body.addEventListener('MDCDrawer:closed', () => {
   // mainContentEl.querySelector('input, button').focus();
 });
 
-drawerHomeButton.addEventListener("click", (event) => {
+drawerAddButton.addEventListener("click", (event) => {
   removeAllChildNodes(container);
-  barIcon.innerHTML = "home";
+  barIcon.innerHTML = "add";
   hamburgerButton.classList.add("burger-no-ripple");
 });
 
@@ -114,10 +107,10 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  let buttonWrapper = document.createElement("div");
-  buttonWrapper.classList.add("crypto-button-wrapper");
-  buttonWrapper.appendChild(addCryptoButton);
-  document.body.appendChild(buttonWrapper);
+  // let buttonWrapper = document.createElement("div");
+  // buttonWrapper.classList.add("crypto-button-wrapper");
+  // buttonWrapper.appendChild(addCryptoButton);
+  // document.body.appendChild(buttonWrapper);
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
@@ -152,14 +145,10 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   
 });
 
-addCryptoButton.addEventListener("click", (event) => {
-  document.body.prepend(screenCover);
-  //container.appendChild(cryptoForm);
-});
 
 window.addEventListener('deviceorientation', (event) => {
   console.log(event.gamma);
-  if(event.gamma >= 20) {
+  if(event.gamma >= 30) {
     drawer.open = true;
   }
 }, true);
@@ -168,9 +157,6 @@ screenCover.addEventListener("click", (event) => {
   document.body.removeChild(screenCover);
 })
 
-// window.onload = function() {
-//   screen.orientation.lock("landscape");
-// }
 
 //HELPER FUNCTIONS
 //Credit: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/
@@ -239,3 +225,32 @@ const formatDate = function(timestamp) {
   let month = months[d.getMonth()]
   return month + " " + day;
 }
+
+//When the page laods on the news screen, display the news
+document.addEventListener("DOMContentLoaded", (event) => {
+  //Fetch crypto,economy,stock news from the API
+  fetch(LUNARCRUSH_FEED_URL)
+  .then(response => response.json())
+  .then(news => {
+    container.appendChild(newsGrid);
+    let nIndex = 0;
+    shuffleArray(news.data);
+    for(let i = 1; i < 4; i++) {
+      for(let j = 1; j < 3; j++) {
+        //Put each pice of news in its own card on the grid
+        let card = document.createElement("div");
+        let newsObj = news.data[nIndex];
+        card.classList.add(`mdc-card`, `news-card`,`news-grid-item${nIndex+1}`);
+        card.innerHTML = newsCardTemplate;
+        card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
+        card.querySelector(".card-title").innerHTML = newsObj.title;
+        card.querySelector(".card-title").classList.add("news-card-title");
+        card.querySelector(".card-description").innerHTML = (newsObj.description.length < 160) ? (newsObj.description) : (newsObj.description + "...");
+        card.querySelector(".card-description").classList.add("news-card-description");
+        card.querySelector(".mdc-card__action--button").href = newsObj.url
+        newsGrid.appendChild(card);
+        nIndex += 1;
+      }
+    }
+  })
+});

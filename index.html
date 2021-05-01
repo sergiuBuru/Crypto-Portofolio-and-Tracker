@@ -33,7 +33,7 @@
             <!-- <div id="bar-icon" class="material-icons" aria-label="Timeline">timeline</div> -->
           </section>
           <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-            <div id="bar-icon" class="material-icons bar-icon" aria-label="Home">home</div>
+            <div id="bar-icon" class="material-icons bar-icon" aria-label="Announcements">announcements</div>
             <!-- <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Search">search</button>
             <button class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Options">more_vert</button> -->
           </section>
@@ -43,12 +43,7 @@
       <aside class="mdc-drawer mdc-drawer--modal">
         <div class="mdc-drawer__content">
           <nav class="mdc-list">
-            <a id="home-button" class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page" tabindex="0">
-                <span class="mdc-list-item__ripple"></span>
-                <i class="material-icons mdc-list-item__graphic" aria-hidden="true">home</i>
-                <span class="mdc-list-item__text">Home</span>
-            </a>
-            <a id="news-button" class="mdc-list-item" href="#" aria-current="page">
+            <a id="news-button" class="mdc-list-item mdc-list-item--activated" href="#" aria-current="page">
               <span class="mdc-list-item__ripple"></span>
               <i class="material-icons mdc-list-item__graphic" aria-hidden="true">announcement</i>
               <span class="mdc-list-item__text">Crypto News</span>
@@ -63,6 +58,11 @@
               <i class="material-icons mdc-list-item__graphic" aria-hidden="true">timeline</i>
               <span class="mdc-list-item__text">My Investments</span>
             </a>
+            <a id="home-button" class="mdc-list-item" href="#" aria-current="page" tabindex="0">
+              <span class="mdc-list-item__ripple"></span>
+              <i class="material-icons mdc-list-item__graphic" aria-hidden="true">add</i>
+              <span class="mdc-list-item__text">Add Investment</span>
+          </a>
           </nav>
         </div>
       </aside>
@@ -70,7 +70,11 @@
       <div class="mdc-drawer-scrim"></div>
 
       <main class="mdc-top-app-bar--fixed-adjust">
-        <div class="container"></div>
+        <div class="container">
+          <div class="crypto-form">
+            
+          </div>
+        </div>
       </main>
 
     <script>
