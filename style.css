@@ -43,7 +43,7 @@
     }
 }
 
-@media screen and (min-width: 1100px) {
+@media screen and (min-width: 1001px) {
     .crypto-div {
         width: 705px;
         height: 591px;
@@ -58,7 +58,7 @@
     
 }
 
-@media screen and (min-width: 700px) and (max-width: 1099px){
+@media screen and (min-width: 700px) and (max-width: 1000px){
     .container {
         width: 80%;
         height: 90%;
@@ -261,7 +261,7 @@ html, body {
     position: fixed !important;
     z-index: 3;
     /* margin-left: 32.5%; */
-    text-align: center;
+    /* text-align: center;
     margin: auto; */
 }
 
