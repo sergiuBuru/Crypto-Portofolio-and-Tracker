@@ -1,25 +1,3 @@
-
-//HTML ELEMENTS, VARIABLES AND INSTANTIATIONS
-const topAppBarElement = document.querySelector('.mdc-top-app-bar');
-const nav = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
-const drawer = mdc.drawer.MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
-const listEl = document.querySelector('.mdc-drawer .mdc-list');
-const mainContentEl = document.querySelector('main');
-// const drawerScrim = document.querySelector(".mdc-drawer-scrim");
-const hamburgerButton = document.querySelector("#nav-burgerbutton");
-const drawerAddButton = document.querySelector("#home-button");
-const drawerNewsButton = document.querySelector("#news-button");
-const drawerTrendingButton = document.querySelector("#trending-button");
-const drawerInvestmentsButton = document.querySelector("#investments-button");
-const container = document.querySelector(".container");
-const barIcon = document.querySelector("#bar-icon");
-const newsGrid = document.createElement("div");
-newsGrid.classList.add("news-grid");
-
-//API ENDPOINTS
-const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
-const LUNARCRUSH_FEED_URL = "https://api.lunarcrush.com/v2?data=feeds&sources=news&key=25wd02gbkx519y03yeha2f";
-
 //Templates
 const newsCardTemplate = `<div class="mdc-card__primary-action">
                                 <div class="mdc-card__media mdc-card__media--square mdc-card__media--16-9"></div>
@@ -75,6 +53,7 @@ const selectTemplate = `
 
                           <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
                             <ul class="mdc-list" role="listbox" aria-label="Crypto picker listbox">
+                              
                             </ul>
                           </div>`;
 
@@ -91,29 +70,59 @@ const textfieldTemplate = `<span class="mdc-text-field__ripple"></span>
                            <input class="mdc-text-field__input" type="text" aria-labelledby="my-label-id">
                            <span class="mdc-line-ripple"></span>`;
 
+const selectItemTemplate = `  <span class="mdc-list-item__ripple"></span>
+                              <span class="mdc-list-item__text"></span>`;
 
-//ELEMENTS                      
+const snackBarTemplate = `<div class="mdc-snackbar__surface" role="status" aria-relevant="additions">
+                            <div class="mdc-snackbar__label" aria-atomic="false">
+                               
+                            </div>
+                          </div>`;
+
+//HTML ELEMENTS, VARIABLES AND INSTANTIATIONS
+const topAppBarElement = document.querySelector('.mdc-top-app-bar');
+const nav = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
+const drawer = mdc.drawer.MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
+const listEl = document.querySelector('.mdc-drawer .mdc-list');
+const mainContentEl = document.querySelector('main');
+// const drawerScrim = document.querySelector(".mdc-drawer-scrim");
+const hamburgerButton = document.querySelector("#nav-burgerbutton");
+const drawerAddButton = document.querySelector("#home-button");
+const drawerNewsButton = document.querySelector("#news-button");
+const drawerTrendingButton = document.querySelector("#trending-button");
+const drawerInvestmentsButton = document.querySelector("#investments-button");
+const container = document.querySelector(".container");
+const barIcon = document.querySelector("#bar-icon");
+const newsGrid = document.createElement("div");
+newsGrid.classList.add("news-grid");
 const screenCover = document.createElement("div");
 screenCover.classList.add("screen-cover");
-
 const cryptoForm = document.createElement("div");
 cryptoForm.classList.add("crypto-form");
-
 const cryptoFormTextfield = document.createElement("label");
 cryptoFormTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-textfield");
 cryptoFormTextfield.innerHTML = textfieldTemplate;
-
 const cryptoFormSearchbutton = document.createElement("button");
 cryptoFormSearchbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-searchbutton");
 cryptoFormSearchbutton.innerHTML = searchbuttonTemplate;
-
 const cryptoFormSelect = document.createElement("div");
 cryptoFormSelect.classList.add("mdc-select", "mdc-select--filled", "demo-width-class");
 cryptoFormSelect.innerHTML = selectTemplate;
-
+const selectUL = cryptoFormSelect.querySelector("ul");
 const cryptoFormAddbutton = document.createElement("button");
 cryptoFormAddbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-addbutton");
 cryptoFormAddbutton.innerHTML = addbuttonTemplate;
+let select, textfield, searchButtonRipple, addButtonRipple;
+
+//GLOBAL VARIABLES
+const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
+const LUNARCRUSH_FEED_URL = "https://api.lunarcrush.com/v2?data=feeds&sources=news&key=25wd02gbkx519y03yeha2f";
+const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
+let cryptoFormInput = "";
+let investmentsDB = new Dexie("app_db");
+investmentsDB.version(1).stores({
+  cryptoNames: "name"
+});
 
 //EVENT HANDLERS
 hamburgerButton.addEventListener("click", (event) => {
@@ -129,24 +138,70 @@ document.body.addEventListener('MDCDrawer:closed', () => {
   // mainContentEl.querySelector('input, button').focus();
 });
 
+cryptoFormAddbutton.addEventListener("click", (event) => {
+  let cryptoSelected;
+  //Find the crypto the user selected and store it in the DB
+  cryptoSelected = select.selectedText.textContent;
+  investmentsDB.cryptoNames.put({name: cryptoSelected});
+  let snackBar = document.createElement("div");
+  snackBar.classList.add("mdc-snackbar");
+  snackBar.innerHTML = snackBarTemplate;
+  container.appendChild(snackBar);
+  const snackbar = new mdc.snackbar.MDCSnackbar(snackBar);
+  snackbar.labelText = cryptoSelected + " has been added to your investments page.";
+  snackbar.open();
+});
+
+cryptoFormSearchbutton.addEventListener("click", (event) => {
+  cryptoFormAddbutton.disabled = false;
+  removeAllChildNodes(selectUL);
+  //Get the input from the textfield
+  cryptoFormInput = cryptoFormTextfield.querySelector("input").value;
+
+  //Based on the crypto name input given, find all crypto's whose names are similar
+  // to the input
+  //Fetch all crypos from the api and match them against the input
+  fetch(COIN_GECKO_COIN_LIST)
+    .then(response => response.json())
+    .then(coins => {
+      coins.forEach(coin => {
+        //If the strings are 70% or more similar insert them into the select element
+        if(stringSimilarity(coin.name, cryptoFormInput) >= 0.7) {
+          const selectItem = document.createElement("li");
+          selectItem.classList.add("mdc-list-item");
+          selectItem.ariaSelected = "false";
+          selectItem.innerHTML = selectItemTemplate;
+          selectItem.setAttribute("role", "option");
+          selectItem.setAttribute("data-value", coin.name.toLowerCase());
+          selectItem.querySelector(".mdc-list-item__text").innerHTML = coin.name;
+          selectUL.appendChild(selectItem);
+        }
+      })
+    });
+});
+
 drawerAddButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "add";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-
+  removeAllChildNodes(selectUL);
+  cryptoFormTextfield.querySelector("input").value = "";
+  
+  //Add the crypto form to the container then append all the elemnts in the form
   container.appendChild(cryptoForm);
 
   cryptoForm.appendChild(cryptoFormTextfield);
-  const textField = new mdc.textField.MDCTextField(document.querySelector(".mdc-text-field"));
+  textField = new mdc.textField.MDCTextField(document.querySelector(".mdc-text-field"));
   
   cryptoForm.appendChild(cryptoFormSearchbutton);
-  const searchButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-searchbutton"));
+  searchButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-searchbutton"));
 
   cryptoForm.appendChild(cryptoFormSelect);
-  const select = new mdc.select.MDCSelect(document.querySelector(".mdc-select"));
+  select = new mdc.select.MDCSelect(document.querySelector(".mdc-select"));
 
+  cryptoFormAddbutton.disabled = true;
   cryptoForm.appendChild(cryptoFormAddbutton);
-  const addButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-addbutton"));
+  addButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-addbutton"));
 });
 
 drawerNewsButton.addEventListener("click", (event) => {
@@ -236,6 +291,35 @@ screenCover.addEventListener("click", (event) => {
   document.body.removeChild(screenCover);
 })
 
+//When the page laods on the news screen, display the news
+document.addEventListener("DOMContentLoaded", (event) => {
+  //Fetch crypto,economy,stock news from the API
+  fetch(LUNARCRUSH_FEED_URL)
+  .then(response => response.json())
+  .then(news => {
+    container.appendChild(newsGrid);
+    let nIndex = 0;
+    shuffleArray(news.data);
+    for(let i = 1; i < 4; i++) {
+      for(let j = 1; j < 3; j++) {
+        //Put each pice of news in its own card on the grid
+        let card = document.createElement("div");
+        let newsObj = news.data[nIndex];
+        card.classList.add(`mdc-card`, `news-card`,`news-grid-item${nIndex+1}`);
+        card.innerHTML = newsCardTemplate;
+        card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
+        card.querySelector(".card-title").innerHTML = newsObj.title;
+        card.querySelector(".card-title").classList.add("news-card-title");
+        card.querySelector(".card-description").innerHTML = (newsObj.description.length < 160) ? (newsObj.description) : (newsObj.description + "...");
+        card.querySelector(".card-description").classList.add("news-card-description");
+        card.querySelector(".mdc-card__action--button").href = newsObj.url
+        newsGrid.appendChild(card);
+        nIndex += 1;
+      }
+    }
+  })
+});
+
 
 //HELPER FUNCTIONS
 //Credit: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/
@@ -305,31 +389,46 @@ const formatDate = function(timestamp) {
   return month + " " + day;
 }
 
-//When the page laods on the news screen, display the news
-document.addEventListener("DOMContentLoaded", (event) => {
-  //Fetch crypto,economy,stock news from the API
-  fetch(LUNARCRUSH_FEED_URL)
-  .then(response => response.json())
-  .then(news => {
-    container.appendChild(newsGrid);
-    let nIndex = 0;
-    shuffleArray(news.data);
-    for(let i = 1; i < 4; i++) {
-      for(let j = 1; j < 3; j++) {
-        //Put each pice of news in its own card on the grid
-        let card = document.createElement("div");
-        let newsObj = news.data[nIndex];
-        card.classList.add(`mdc-card`, `news-card`,`news-grid-item${nIndex+1}`);
-        card.innerHTML = newsCardTemplate;
-        card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
-        card.querySelector(".card-title").innerHTML = newsObj.title;
-        card.querySelector(".card-title").classList.add("news-card-title");
-        card.querySelector(".card-description").innerHTML = (newsObj.description.length < 160) ? (newsObj.description) : (newsObj.description + "...");
-        card.querySelector(".card-description").classList.add("news-card-description");
-        card.querySelector(".mdc-card__action--button").href = newsObj.url
-        newsGrid.appendChild(card);
-        nIndex += 1;
+//Credit: https://stackoverflow.com/questions/10473745/compare-strings-javascript-return-of-likely
+//Function that computes similarity percentage between two strings
+const stringSimilarity = function(s1, s2) {
+  var longer = s1;
+  var shorter = s2;
+  if (s1.length < s2.length) {
+    longer = s2;
+    shorter = s1;
+  }
+  var longerLength = longer.length;
+  if (longerLength == 0) {
+    return 1.0;
+  }
+  return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+}
+
+function editDistance(s1, s2) {
+  s1 = s1.toLowerCase();
+  s2 = s2.toLowerCase();
+
+  var costs = new Array();
+  for (var i = 0; i <= s1.length; i++) {
+    var lastValue = i;
+    for (var j = 0; j <= s2.length; j++) {
+      if (i == 0)
+        costs[j] = j;
+      else {
+        if (j > 0) {
+          var newValue = costs[j - 1];
+          if (s1.charAt(i - 1) != s2.charAt(j - 1))
+            newValue = Math.min(Math.min(newValue, lastValue),
+              costs[j]) + 1;
+          costs[j - 1] = lastValue;
+          lastValue = newValue;
+        }
       }
     }
-  })
-});
+    if (i > 0)
+      costs[s2.length] = lastValue;
+  }
+  return costs[s2.length];
+}
+//------------
