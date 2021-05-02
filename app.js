@@ -123,6 +123,10 @@ let investmentsDB = new Dexie("app_db");
 investmentsDB.version(1).stores({
   cryptoNames: "name"
 });
+let possibleCryptosDB = new Dexie("app_db2");
+possibleCryptosDB.version(1).stores ({
+  names: "name"
+});
 
 //EVENT HANDLERS
 hamburgerButton.addEventListener("click", (event) => {
@@ -142,7 +146,11 @@ cryptoFormAddbutton.addEventListener("click", (event) => {
   let cryptoSelected;
   //Find the crypto the user selected and store it in the DB
   cryptoSelected = select.selectedText.textContent;
-  investmentsDB.cryptoNames.put({name: cryptoSelected});
+  //Get the id and name of this crypto and store them in the investments DB
+  possibleCryptosDB.names.get({name: cryptoSelected})
+    .then(obj => {
+      investmentsDB.cryptoNames.put({name: obj.name, id: obj.id});
+    })
   let snackBar = document.createElement("div");
   snackBar.classList.add("mdc-snackbar");
   snackBar.innerHTML = snackBarTemplate;
@@ -167,6 +175,8 @@ cryptoFormSearchbutton.addEventListener("click", (event) => {
       coins.forEach(coin => {
         //If the strings are 70% or more similar insert them into the select element
         if(stringSimilarity(coin.name, cryptoFormInput) >= 0.7) {
+          //Store them in the DB
+          possibleCryptosDB.names.put({id: coin.id, name: coin.name});
           const selectItem = document.createElement("li");
           selectItem.classList.add("mdc-list-item");
           selectItem.ariaSelected = "false";
@@ -241,10 +251,6 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  // let buttonWrapper = document.createElement("div");
-  // buttonWrapper.classList.add("crypto-button-wrapper");
-  // buttonWrapper.appendChild(addCryptoButton);
-  // document.body.appendChild(buttonWrapper);
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
@@ -272,11 +278,34 @@ drawerTrendingButton.addEventListener("click", (event) => {
 });
 
 drawerInvestmentsButton.addEventListener("click", (event) => {
-  container.innerHTML = "<h1>investments</h1>";
   barIcon.innerHTML = "timeline";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
   
+  //Go through all coins in the DB and display each on a graph
+  investmentsDB.cryptoNames.each( crypto => {
+    let days;
+    let interval;
+    
+    if(window.innerWidth < 700) {
+      days = 7;
+      interval = "daily";
+    } else {
+      days = 14;
+      interval = "hourly";
+    }
+    fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
+      .then(response => response.json())
+      .then(data => {
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}?localization=false`)
+          .then(response => response.json())
+          .then(coin => {
+            drawChart(data.prices, coin);
+          })
+      })
+  })
+
+
 });
 
 
