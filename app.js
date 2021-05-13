@@ -66,7 +66,7 @@ const addbuttonTemplate = `<span class="mdc-button__ripple"></span>
                         <span class="mdc-button__touch"></span>`;
 
 const textfieldTemplate = `<span class="mdc-text-field__ripple"></span>
-                           <span class="mdc-floating-label" id="my-label-id">Crypto Name</span>
+                           <span class="mdc-floating-label" id="my-label-id"></span>
                            <input class="mdc-text-field__input" type="text" aria-labelledby="my-label-id">
                            <span class="mdc-line-ripple"></span>`;
 
@@ -99,9 +99,17 @@ const screenCover = document.createElement("div");
 screenCover.classList.add("screen-cover");
 const cryptoForm = document.createElement("div");
 cryptoForm.classList.add("crypto-form");
-const cryptoFormTextfield = document.createElement("label");
-cryptoFormTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-textfield");
-cryptoFormTextfield.innerHTML = textfieldTemplate;
+const cryptoFormNameTextfield = document.createElement("label");
+cryptoFormNameTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-name-textfield");
+cryptoFormNameTextfield.innerHTML = textfieldTemplate;
+//
+const cryptoFormDateTextfield = document.createElement("label");
+cryptoFormDateTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-date-textfield");
+cryptoFormDateTextfield.innerHTML = textfieldTemplate;
+const cryptoFormAmountTextfield = document.createElement("label");
+cryptoFormAmountTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-amount-textfield");
+cryptoFormAmountTextfield.innerHTML = textfieldTemplate;
+//
 const cryptoFormSearchbutton = document.createElement("button");
 cryptoFormSearchbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-searchbutton");
 cryptoFormSearchbutton.innerHTML = searchbuttonTemplate;
@@ -112,7 +120,7 @@ const selectUL = cryptoFormSelect.querySelector("ul");
 const cryptoFormAddbutton = document.createElement("button");
 cryptoFormAddbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-addbutton");
 cryptoFormAddbutton.innerHTML = addbuttonTemplate;
-let select, textfield, searchButtonRipple, addButtonRipple;
+let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, addButtonRipple;
 
 //GLOBAL VARIABLES
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
@@ -162,10 +170,13 @@ cryptoFormAddbutton.addEventListener("click", (event) => {
 
 cryptoFormSearchbutton.addEventListener("click", (event) => {
   cryptoFormAddbutton.disabled = false;
+  dateTextField.disabled = false;
+  amountTextField.disabled = false;
+
   removeAllChildNodes(selectUL);
   //Get the input from the textfield
-  cryptoFormInput = cryptoFormTextfield.querySelector("input").value;
-
+  cryptoFormInput = nameTextField.value;
+  
   //Based on the crypto name input given, find all crypto's whose names are similar
   // to the input
   //Fetch all crypos from the api and match them against the input
@@ -173,7 +184,7 @@ cryptoFormSearchbutton.addEventListener("click", (event) => {
     .then(response => response.json())
     .then(coins => {
       coins.forEach(coin => {
-        //If the strings are 70% or more similar insert them into the select element
+        //If the strings are at least 70% similar insert them into the select element
         if(stringSimilarity(coin.name, cryptoFormInput) >= 0.7) {
           //Store them in the DB
           possibleCryptosDB.names.put({id: coin.id, name: coin.name});
@@ -195,20 +206,35 @@ drawerAddButton.addEventListener("click", (event) => {
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
   removeAllChildNodes(selectUL);
-  cryptoFormTextfield.querySelector("input").value = "";
-  
+  cryptoFormNameTextfield.querySelector("input").value = "";
+  cryptoFormAmountTextfield.querySelector("input").value = "";
+  cryptoFormDateTextfield.querySelector("input").value = "";
+
+  cryptoFormNameTextfield.querySelector("#my-label-id").innerHTML = "Crypto name";
+  cryptoFormDateTextfield.querySelector("#my-label-id").innerHTML = "Date(mm-dd-yy)";
+  cryptoFormAmountTextfield.querySelector("#my-label-id").innerHTML = "Amount invested";
+
   //Add the crypto form to the container then append all the elemnts in the form
   container.appendChild(cryptoForm);
 
-  cryptoForm.appendChild(cryptoFormTextfield);
-  textField = new mdc.textField.MDCTextField(document.querySelector(".mdc-text-field"));
+  cryptoForm.appendChild(cryptoFormNameTextfield);
+  nameTextField = new mdc.textField.MDCTextField(document.querySelector(".crypto-form-name-textfield"));
   
+  cryptoForm.appendChild(cryptoFormDateTextfield);
+  dateTextField = new mdc.textField.MDCTextField(document.querySelector(".crypto-form-date-textfield"));
+  
+  cryptoForm.appendChild(cryptoFormAmountTextfield);
+  amountTextField = new mdc.textField.MDCTextField(document.querySelector(".crypto-form-amount-textfield"));
+
+
   cryptoForm.appendChild(cryptoFormSearchbutton);
   searchButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-searchbutton"));
 
   cryptoForm.appendChild(cryptoFormSelect);
   select = new mdc.select.MDCSelect(document.querySelector(".mdc-select"));
 
+  dateTextField.disabled = true;
+  amountTextField.disabled = true;
   cryptoFormAddbutton.disabled = true;
   cryptoForm.appendChild(cryptoFormAddbutton);
   addButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-addbutton"));
@@ -304,8 +330,6 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
           })
       })
   })
-
-
 });
 
 
@@ -389,11 +413,7 @@ function drawChart(coinPrices, coin) {
     dataArray.push([formatDate(price[0]), price[1]])
   });
 
-  console.log("");
-
   let options = {
-    // width: chartDiv.offsetWidth,
-    // height: .7 * chartDiv.offsetHeight,
     color: '#000000',
     chartArea: {backgroundColor: 'white'},
     chartArea: {
