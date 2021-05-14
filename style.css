@@ -107,9 +107,8 @@ html, body {
     top: -3px;
 }
 
-
 .crypto-div {
-    /* margin-top: 40px; */
+    margin-top: 20px;
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
@@ -397,4 +396,19 @@ main {
         grid-row: 7 / 8;
     }
 
+}
+
+/* from bootstrap 5 */
+.alert-dark {
+    width: 100%;
+    height: 15%;
+    top: 20px;
+    position: relative;
+    padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    color: #141619;
+    background-color: #d3d3d4;
+    border-color: #bcbebf;
 }

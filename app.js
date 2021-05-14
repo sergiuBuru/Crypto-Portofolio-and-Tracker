@@ -79,6 +79,19 @@ const snackBarTemplate = `<div class="mdc-snackbar__surface" role="status" aria-
                             </div>
                           </div>`;
 
+const linearProgressTemplate = `
+                                  <div class="mdc-linear-progress__buffer">
+                                    <div class="mdc-linear-progress__buffer-bar"></div>
+                                    <div class="mdc-linear-progress__buffer-dots"></div>
+                                  </div>
+                                  <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                                    <span class="mdc-linear-progress__bar-inner"></span>
+                                  </div>
+                                  <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                                    <span class="mdc-linear-progress__bar-inner"></span>
+                                  </div>
+                                `;
+
 //HTML ELEMENTS, VARIABLES AND INSTANTIATIONS
 const topAppBarElement = document.querySelector('.mdc-top-app-bar');
 const nav = new mdc.topAppBar.MDCTopAppBar(topAppBarElement);
@@ -102,14 +115,12 @@ cryptoForm.classList.add("crypto-form");
 const cryptoFormNameTextfield = document.createElement("label");
 cryptoFormNameTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-name-textfield");
 cryptoFormNameTextfield.innerHTML = textfieldTemplate;
-//
 const cryptoFormDateTextfield = document.createElement("label");
 cryptoFormDateTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-date-textfield");
 cryptoFormDateTextfield.innerHTML = textfieldTemplate;
 const cryptoFormAmountTextfield = document.createElement("label");
 cryptoFormAmountTextfield.classList.add("mdc-text-field","mdc-text-field--filled","crypto-form-amount-textfield");
 cryptoFormAmountTextfield.innerHTML = textfieldTemplate;
-//
 const cryptoFormSearchbutton = document.createElement("button");
 cryptoFormSearchbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-searchbutton");
 cryptoFormSearchbutton.innerHTML = searchbuttonTemplate;
@@ -120,7 +131,15 @@ const selectUL = cryptoFormSelect.querySelector("ul");
 const cryptoFormAddbutton = document.createElement("button");
 cryptoFormAddbutton.classList.add("mdc-button", "mdc-button--raised", "crypto-form-addbutton");
 cryptoFormAddbutton.innerHTML = addbuttonTemplate;
-let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, addButtonRipple;
+const progressBarElement = document.createElement("div");
+progressBarElement.innerHTML = linearProgressTemplate;
+progressBarElement.setAttribute("role", "progressbar");
+progressBarElement.setAttribute("aria-label", "Example Progress Bar");
+progressBarElement.setAttribute("aria-valuemin", "0");
+progressBarElement.setAttribute("aria-valuemax", "1");
+progressBarElement.setAttribute("aria-valuenow", "0");
+progressBarElement.classList.add("mdc-linear-progress");
+let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, addButtonRipple, progressBar;
 
 //GLOBAL VARIABLES
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
@@ -246,13 +265,18 @@ drawerNewsButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "announcements";
   hamburgerButton.classList.add("burger-no-ripple");
   
+  container.appendChild(progressBarElement);
+  progressBar = new mdc.linearProgress.MDCLinearProgress(progressBarElement);
+  progressBar.determinate = false;
+  progressBar.open();
+
   //Fetch crypto,economy,stock news from the API
   fetch(LUNARCRUSH_FEED_URL)
   .then(response => response.json())
   .then(news => {
     container.appendChild(newsGrid);
     let nIndex = 0;
-    shuffleArray(news.data);
+    //shuffleArray(news.data);
     for(let i = 1; i < 4; i++) {
       for(let j = 1; j < 3; j++) {
         //Put each pice of news in its own card on the grid
@@ -270,6 +294,7 @@ drawerNewsButton.addEventListener("click", (event) => {
         nIndex += 1;
       }
     }
+    progressBar.close();
   })
 });
 
@@ -277,6 +302,12 @@ drawerTrendingButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "whatshot";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
+
+  container.appendChild(progressBarElement);
+  progressBar = new mdc.linearProgress.MDCLinearProgress(progressBarElement);
+  progressBar.determinate = false;
+  progressBar.open();
+
   fetch(COINGECKO_TRENDING_URL)
     .then(response => response.json())
     .then(trendingCryptos => {
@@ -298,7 +329,7 @@ drawerTrendingButton.addEventListener("click", (event) => {
             if(data.prices.length < (days - 1)) { return;}
             drawChart(data.prices, crypto.item);
           })
-
+        progressBar.close();
       });
     })
 });
@@ -307,8 +338,18 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   barIcon.innerHTML = "timeline";
   hamburgerButton.classList.add("burger-no-ripple");
   removeAllChildNodes(container);
-  
+  container.appendChild(progressBarElement);
+  progressBar = new mdc.linearProgress.MDCLinearProgress(progressBarElement);
+  progressBar.determinate = false;
+  progressBar.open();
   //Go through all coins in the DB and display each on a graph
+  investmentsDB.cryptoNames.count((count) => {
+    let alert = document.createElement("div");
+    alert.classList.add("alert-dark");
+    alert.innerHTML = "You are currently not tracking any coin.";
+    container.appendChild(alert);
+    if(count == 0) { progressBar.close();}
+  })
   investmentsDB.cryptoNames.each( crypto => {
     let days;
     let interval;
@@ -329,6 +370,7 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
             drawChart(data.prices, coin);
           })
       })
+      progressBar.close();
   })
 });
 
