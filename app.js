@@ -139,6 +139,9 @@ progressBarElement.setAttribute("aria-valuemin", "0");
 progressBarElement.setAttribute("aria-valuemax", "1");
 progressBarElement.setAttribute("aria-valuenow", "0");
 progressBarElement.classList.add("mdc-linear-progress");
+let alert = document.createElement("div");
+alert.classList.add("alert-dark");
+alert.innerHTML = "You are currently not tracking any coin.";
 let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, addButtonRipple, progressBar;
 
 //GLOBAL VARIABLES
@@ -344,34 +347,35 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   progressBar.open();
   //Go through all coins in the DB and display each on a graph
   investmentsDB.cryptoNames.count((count) => {
-    let alert = document.createElement("div");
-    alert.classList.add("alert-dark");
-    alert.innerHTML = "You are currently not tracking any coin.";
-    container.appendChild(alert);
-    if(count == 0) { progressBar.close();}
-  })
-  investmentsDB.cryptoNames.each( crypto => {
-    let days;
-    let interval;
-    
-    if(window.innerWidth < 700) {
-      days = 7;
-      interval = "daily";
-    } else {
-      days = 14;
-      interval = "hourly";
-    }
-    fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
-      .then(response => response.json())
-      .then(data => {
-        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}?localization=false`)
-          .then(response => response.json())
-          .then(coin => {
-            drawChart(data.prices, coin);
-          })
-      })
+    if(count == 0) { 
       progressBar.close();
-  })
+      container.appendChild(alert);
+    } else {
+      investmentsDB.cryptoNames.each( crypto => {
+        if(container.contains(alert)) {container.removeChild(alert);}
+        let days;
+        let interval;
+        
+        if(window.innerWidth < 700) {
+          days = 7;
+          interval = "daily";
+        } else {
+          days = 14;
+          interval = "hourly";
+        }
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
+          .then(response => response.json())
+          .then(data => {
+            fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}?localization=false`)
+              .then(response => response.json())
+              .then(coin => {
+                drawChart(data.prices, coin);
+              })
+          })
+          progressBar.close();
+      })
+    }
+  });
 });
 
 
