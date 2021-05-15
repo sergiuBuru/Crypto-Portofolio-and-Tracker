@@ -364,13 +364,13 @@ main {
     } 
 
     .crypto-div {
-        width: 100%;
+        width: 96%;
         height: 721px;
-        margin-left: 0;
-        margin-right: 0;
+        margin-left: 2%;
+        margin-right: 2%;
         margin-top: 10px;
         margin-bottom: 30px;
-        padding: 0 !important;
+        padding: 3px !important;
     }
 
 
@@ -430,12 +430,12 @@ main {
 
     .crypto-form-select {
         grid-column: 1 / 2;
-        grid-row: 2 / 3;
+        grid-row: 3 / 4;
     }
 
     .crypto-form-searchbutton {
         grid-column: 1 / 2;
-        grid-row: 3 / 4;
+        grid-row: 2 / 3;
     }
 
     .crypto-form-date-textfield {
@@ -523,7 +523,7 @@ main {
 }
 
 .bg-light {
-    background-color: #f8f9fa !important;
+    background-color: #f6f6f6 !important;
 }
 
 .bg-dark {
