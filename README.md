@@ -7,7 +7,7 @@ The app contains four screens which can be accessed by clicking the burger butto
 4. The screen for adding new cryptos to the investments page
     - Here the user will be prompted to introduce the name of the crypto
     - After they hit the search button the app will match the input with multiple cryptos fetched from the CoinGecko API
-    - Then the user can select the crypto they are looking fro from the select dropwdown menu and hit Add to add the crypto to the investments
+    - Then the user can select the crypto they are looking for from the select dropwdown menu and hit Add to add the crypto to the investments
 
 ### App responsiveness
 The app is repsonsive on multiple devices including large monitors, smaller devices such as tablets and laptops and phones
