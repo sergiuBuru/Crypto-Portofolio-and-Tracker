@@ -12,7 +12,7 @@ const newsCardTemplate = `<div class="mdc-card__primary-action">
                                 <span class="mdc-button__label">Read article</span>
                               </a>
                           </div>`
-const trendingChartTemplate = `<div class="crypto-div-title border-bottom"></div>
+const trendingChartTemplate = `<div class="crypto-div-title-grid border-bottom"></div>
                                <div class="crypto-price-grid">
                                  <div class="crypto-usd-price"></div>
                                  <div class="crypto-growth"></div>
@@ -149,13 +149,11 @@ const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending
 const LUNARCRUSH_FEED_URL = "https://api.lunarcrush.com/v2?data=feeds&sources=news&key=25wd02gbkx519y03yeha2f";
 const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
 let cryptoFormInput = "";
-let investmentsDB = new Dexie("app_db");
-investmentsDB.version(1).stores({
-  cryptoNames: "name"
-});
-let possibleCryptosDB = new Dexie("app_db2");
-possibleCryptosDB.version(1).stores ({
-  names: "name"
+
+let DB = new Dexie("app_db3");
+DB.version(1).stores({
+  investments: "name",
+  possibleCryptos: "name"
 });
 
 //EVENT HANDLERS
@@ -173,14 +171,24 @@ document.body.addEventListener('MDCDrawer:closed', () => {
 });
 
 cryptoFormAddbutton.addEventListener("click", (event) => {
-  let cryptoSelected;
   //Find the crypto the user selected and store it in the DB
-  cryptoSelected = select.selectedText.textContent;
+  let cryptoSelected = select.selectedText.textContent;
+  let date = dateTextField.value;
+  let amount = amountTextField.value;
   //Get the id and name of this crypto and store them in the investments DB
-  possibleCryptosDB.names.get({name: cryptoSelected})
+  DB.transaction('rw', DB.possibleCryptos, DB.investments, () => {
+    DB.possibleCryptos.get({name: cryptoSelected})
     .then(obj => {
-      investmentsDB.cryptoNames.put({name: obj.name, id: obj.id});
+      DB.investments.put({name: obj.name, id: obj.id, date: date, amount: amount})
     })
+  })
+  .then(() => {
+    console.log("Transaction commited.")
+  })
+  .catch(err => {
+    console.log("In add button " + err);
+  });
+
   let snackBar = document.createElement("div");
   snackBar.classList.add("mdc-snackbar");
   snackBar.innerHTML = snackBarTemplate;
@@ -209,7 +217,13 @@ cryptoFormSearchbutton.addEventListener("click", (event) => {
         //If the strings are at least 70% similar insert them into the select element
         if(stringSimilarity(coin.name, cryptoFormInput) >= 0.7) {
           //Store them in the DB
-          possibleCryptosDB.names.put({id: coin.id, name: coin.name});
+          //possibleCryptosDB.names.put({id: coin.id, name: coin.name});
+          DB.transaction('rw', DB.possibleCryptos, () => {
+            DB.possibleCryptos.put({id: coin.id, name: coin.name});
+          })
+          .catch(err => {
+            console.log("In search button: " + err);
+          })
           const selectItem = document.createElement("li");
           selectItem.classList.add("mdc-list-item");
           selectItem.ariaSelected = "false";
@@ -233,7 +247,7 @@ drawerAddButton.addEventListener("click", (event) => {
   cryptoFormDateTextfield.querySelector("input").value = "";
 
   cryptoFormNameTextfield.querySelector("#my-label-id").innerHTML = "Crypto name";
-  cryptoFormDateTextfield.querySelector("#my-label-id").innerHTML = "Date(mm-dd-yy)";
+  cryptoFormDateTextfield.querySelector("#my-label-id").innerHTML = "Date(mm-dd-yyyy)";
   cryptoFormAmountTextfield.querySelector("#my-label-id").innerHTML = "Amount invested";
 
   //Add the crypto form to the container then append all the elemnts in the form
@@ -247,7 +261,6 @@ drawerAddButton.addEventListener("click", (event) => {
   
   cryptoForm.appendChild(cryptoFormAmountTextfield);
   amountTextField = new mdc.textField.MDCTextField(document.querySelector(".crypto-form-amount-textfield"));
-
 
   cryptoForm.appendChild(cryptoFormSearchbutton);
   searchButtonRipple = new mdc.ripple.MDCRipple(document.querySelector(".crypto-form-searchbutton"));
@@ -330,7 +343,7 @@ drawerTrendingButton.addEventListener("click", (event) => {
           .then(response => response.json())
           .then(data => {
             if(data.prices.length < (days - 1)) { return;}
-            drawChart(data.prices, crypto.item);
+            drawChart(data.prices, crypto.item, "trending");
           })
         progressBar.close();
       });
@@ -346,35 +359,37 @@ drawerInvestmentsButton.addEventListener("click", (event) => {
   progressBar.determinate = false;
   progressBar.open();
   //Go through all coins in the DB and display each on a graph
-  investmentsDB.cryptoNames.count((count) => {
-    if(count == 0) { 
-      progressBar.close();
-      container.appendChild(alert);
-    } else {
-      investmentsDB.cryptoNames.each( crypto => {
-        if(container.contains(alert)) {container.removeChild(alert);}
-        let days;
-        let interval;
-        
-        if(window.innerWidth < 700) {
-          days = 7;
-          interval = "daily";
-        } else {
-          days = 14;
-          interval = "hourly";
-        }
-        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
-          .then(response => response.json())
-          .then(data => {
-            fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}?localization=false`)
-              .then(response => response.json())
-              .then(coin => {
-                drawChart(data.prices, coin);
-              })
-          })
-          progressBar.close();
-      })
-    }
+  DB.transaction('r', DB.investments, () => {
+    DB.investments.count(count => {
+      if(count == 0) { 
+        progressBar.close();
+        container.appendChild(alert);
+      } else {
+        DB.investments.each( crypto => {
+          if(container.contains(alert)) {container.removeChild(alert);}
+          let days;
+          let interval;
+          
+          if(window.innerWidth < 700) {
+            days = 7;
+            interval = "daily";
+          } else {
+            days = 14;
+            interval = "hourly";
+          }
+          fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/market_chart?vs_currency=usd&days=${days}&interval=${interval}`)
+            .then(response => response.json())
+            .then(data => {
+              fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}?localization=false`)
+                .then(response => response.json())
+                .then(coin => {
+                  drawChart(data.prices, coin, "investment");
+                })
+            })
+            progressBar.close();
+        })
+      }
+    })
   });
 });
 
@@ -409,7 +424,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
         card.querySelector(".mdc-card__media").style.backgroundImage = `url(${newsObj.thumbnail})`;
         card.querySelector(".card-title").innerHTML = newsObj.title;
         card.querySelector(".card-title").classList.add("news-card-title");
-        card.querySelector(".card-description").innerHTML = (newsObj.description.length < 160) ? (newsObj.description) : (newsObj.description + "...");
+        if(newsObj.description) {
+          card.querySelector(".card-description").innerHTML = (newsObj.description.length < 160) ? (newsObj.description) : (newsObj.description + "...");
+        }
         card.querySelector(".card-description").classList.add("news-card-description");
         card.querySelector(".mdc-card__action--button").href = newsObj.url
         newsGrid.appendChild(card);
@@ -437,12 +454,14 @@ const shuffleArray = function(array) {
   }
 }
 
-function drawChart(coinPrices, coin) {
-  //Create the chart div element for each crypto
+function drawChart(coinPrices, coin, type) {
   let chartDiv = document.createElement("div");
   chartDiv.classList.add("crypto-div");
   chartDiv.innerHTML = trendingChartTemplate;
-  chartDiv.querySelector(".crypto-div-title").innerHTML = `${coin.name} (${coin.symbol})`;
+  let chartTitle = document.createElement("p");
+  chartTitle.classList.add("crypto-div-title");
+  chartTitle.innerText = `${coin.name} (${coin.symbol})`;
+  chartDiv.querySelector(".crypto-div-title-grid").appendChild(chartTitle);
   let currentPrice = coinPrices[coinPrices.length-1][1];
   let firstPrice = coinPrices[0][1];
   let change = ((currentPrice - firstPrice) / firstPrice) * 100;
@@ -452,27 +471,89 @@ function drawChart(coinPrices, coin) {
   chartDiv.querySelector(".crypto-growth").classList.add(color);  
   container.appendChild(chartDiv);
 
-  let dataArray = [
-    ['Date', 'Price'],
-  ]
-  coinPrices.forEach(price => {
-    dataArray.push([formatDate(price[0]), price[1]])
-  });
+  //If the type of crypto is trending then draw a regular chart
+  if(type == "trending") {
+    let dataArray = [
+      ['Date', 'Price'],
+    ]
+    coinPrices.forEach(price => {
+      dataArray.push([formatDate(price[0]), price[1]])
+    });
+  
+    let options = {
+      color: '#000000',
+      chartArea: {backgroundColor: 'white'},
+      chartArea: {
+                  width: '80%', 
+                  height: '80%'
+                 },
+      legend: { position: 'bottom' }
+    };
+  
+    let chart = new google.visualization.LineChart(chartDiv.querySelector("#curve_chart"));
+  
+    let data = google.visualization.arrayToDataTable(dataArray);
+    chart.draw(data, options);
+  } 
+  //If the type is investment, add information about the user's investment in this crypto
+  if(type == "investment"){
+    //Get the crypto information from the DB
+    DB.transaction('r?', DB.investments, () => {
+      DB.investments.get({name: coin.name})
+      .then(crypto => {
+        //Get the price of the coin when the user invested in it
+        let date = crypto.date.slice(3,5) + "-" + crypto.date.slice(0,2) + "-" + crypto.date.slice(6,10);
+        fetch(`https://api.coingecko.com/api/v3/coins/${crypto.id}/history?date=${date}`)
+        .then(res => res.json())
+        .then(info => {
+          console.log(info.market_data.current_price.usd);
+          let investmentDatePrice = info.market_data.current_price.usd;
+          let profit = (((parseInt(currentPrice) / parseInt(investmentDatePrice)) * parseInt(crypto.amount)) - crypto.amount).toFixed(3);
+          
+          let investmentGrid = document.createElement("div");
+          investmentGrid.classList.add("investment-grid");
+          let dateSpan = document.createElement("span");
+          dateSpan.classList.add("badge", "bg-warning", "text-dark");
+          dateSpan.innerText = "Investment date: " + crypto.date;
+          let amountSpan = document.createElement("span");
+          amountSpan.classList.add("badge","bg-info");
+          amountSpan.innerText = "Investment amount: $" + crypto.amount;
+          let profitSpan = document.createElement("span");
+          let color = (profit < 0) ? ("bg-danger") : ("bg-success");
+          profitSpan.classList.add("badge",color);
+          profitSpan.innerText = "Profit: $" + profit;
+          investmentGrid.appendChild(dateSpan);
+          investmentGrid.appendChild(amountSpan);
+          investmentGrid.appendChild(profitSpan);
 
-  let options = {
-    color: '#000000',
-    chartArea: {backgroundColor: 'white'},
-    chartArea: {
-                width: '80%', 
-                height: '80%'
-               },
-    legend: { position: 'bottom' }
-  };
+          chartDiv.insertBefore(investmentGrid, chartDiv.querySelector("#curve_chart"));
+          console.log(profit);
 
-  let chart = new google.visualization.LineChart(chartDiv.querySelector("#curve_chart"));
-
-  let data = google.visualization.arrayToDataTable(dataArray);
-  chart.draw(data, options);
+          let dataArray = [
+            ['Date', 'Price'],
+          ]
+          coinPrices.forEach(price => {
+            dataArray.push([formatDate(price[0]), price[1]])
+          });
+        
+          let options = {
+            color: '#000000',
+            chartArea: {backgroundColor: 'white'},
+            chartArea: {
+                        width: '80%', 
+                        height: '80%'
+                      },
+            legend: { position: 'bottom' }
+          };
+        
+          let chart = new google.visualization.LineChart(chartDiv.querySelector("#curve_chart"));
+        
+          let data = google.visualization.arrayToDataTable(dataArray);
+          chart.draw(data, options);
+        })
+      })
+    })
+  }
 }
 
 //Given a unix timestamp output the date in "Month day year format"
