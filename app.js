@@ -513,7 +513,7 @@ function drawChart(coinPrices, coin, type) {
           let investmentGrid = document.createElement("div");
           investmentGrid.classList.add("investment-grid");
           let dateSpan = document.createElement("span");
-          dateSpan.classList.add("badge", "bg-warning", "text-dark");
+          dateSpan.classList.add("badge", "bg-warning");
           dateSpan.innerText = "Investment date: " + crypto.date;
           let amountSpan = document.createElement("span");
           amountSpan.classList.add("badge","bg-info");
