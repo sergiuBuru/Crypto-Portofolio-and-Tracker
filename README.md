@@ -1,7 +1,10 @@
 # Crypto Portofolio and Tracker
----
-## About the app:
 
+## About the app:
+This is a website hosted with Gihub Pages at https://sergiuburu.github.io/Crypto-Portofolio-and-Tracker/#.
+The web app provides crypto, finance and world economy news and a list of currently trending crypto coins. Most importantly, it lets the user track cryptos they have invested in.
+
+##Features:
 The app contains four screens which can be accessed by clicking the burger button in the navigation bar:
 1. The news screen where news about crypto, finance and economy are fetched from the [Lunar Crush API](https://lunarcrush.com/developers/docs#feeds)
 2. the trending crypto where information such as market history for up to seven cryptos is fetched from the [CoinGecko API](https://www.coingecko.com/en/api#explore-api)
