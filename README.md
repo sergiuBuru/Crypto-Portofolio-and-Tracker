@@ -1,3 +1,5 @@
+# Crypto Portofolio and Tracker
+---
 ## About the app:
 
 The app contains four screens which can be accessed by clicking the burger button in the navigation bar:
