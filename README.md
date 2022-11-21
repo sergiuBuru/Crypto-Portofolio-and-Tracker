@@ -26,4 +26,4 @@ The app is repsonsive on multiple devices including large monitors, smaller devi
 
 ### Extra features:
 - The app uses the gyroscope sensor of a device in order to detect tilting. If the device is tilted 30 degrees or more to the right, the screen menu will open.
-- The website can be installed as a desktop app because it uses a service worker which allows that capability.
+- The website can be installed as a phone or desktop app because it uses a service worker which allows that capability.
