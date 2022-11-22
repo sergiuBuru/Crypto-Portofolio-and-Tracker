@@ -413,7 +413,11 @@ screenCover.addEventListener("click", (event) => {
 //When the page laods on the news screen, display the news
 document.addEventListener("DOMContentLoaded", (event) => {
   //Fetch crypto,economy,stock news from the API
-  fetch(LUNARCRUSH_FEED_URL)
+  fetch(LUNARCRUSH_FEED_URL, {
+    headers: {
+        'Authorization': 'Bearer hobvdlm1ifah2j6m45lqik3b1klarlql7m219pz1'
+    }
+  })
   .then(response => response.json())
   .then(news => {
     container.appendChild(newsGrid);
