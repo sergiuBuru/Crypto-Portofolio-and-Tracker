@@ -147,10 +147,11 @@ let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, a
 //GLOBAL VARIABLES
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
 const LUNARCRUSH_FEED_URL = 'https://lunarcrush.com/api3/feeds';
-const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
-const NEWS_API_KEY = '1a556d6f89984183a95496be6a73e481'
-const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything?q=crypto&apiKey=1a556d6f89984183a95496be6a73e481'
+// const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
+// const NEWS_API_KEY = '1a556d6f89984183a95496be6a73e481'
+// const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything?q=crypto&apiKey=1a556d6f89984183a95496be6a73e481'
 let cryptoFormInput = "";
+const ECON_NEWS_API = 'https://api.marketaux.com/v1/news/all?api_token=qxXkFiJOURhav8E9GeNmOI99g3JBdexSIJIpuGk6'
 
 let DB = new Dexie("app_db3");
 DB.version(1).stores({
@@ -289,7 +290,7 @@ drawerNewsButton.addEventListener("click", (event) => {
   progressBar.open();
 
   //Fetch crypto,economy,stock news from the API
-  fetch(NEWS_API_ENDPOINT)
+  fetch(ECON_NEWS_API)
   .then(response => response.json())
   .then(news => {
     console.log(news)
@@ -411,7 +412,7 @@ screenCover.addEventListener("click", (event) => {
 //When the page laods on the news screen, display the news
 document.addEventListener("DOMContentLoaded", (event) => {
   //Fetch crypto,economy,stock news from the API
-  fetch(NEWS_API_ENDPOINT)
+  fetch(ECON_NEWS_API)
   .then(response => response.json())
   .then(news => {
     console.log(news)
