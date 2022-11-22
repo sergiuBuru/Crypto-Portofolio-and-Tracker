@@ -148,6 +148,8 @@ let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, a
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
 const LUNARCRUSH_FEED_URL = 'https://lunarcrush.com/api3/feeds';
 const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
+const NEWS_API_KEY = '1a556d6f89984183a95496be6a73e481'
+const NEWS_API_ENDPOINT = 'GET https://newsapi.org/v2/everything?q=crypto&apiKey=1a556d6f89984183a95496be6a73e481'
 let cryptoFormInput = "";
 
 let DB = new Dexie("app_db3");
@@ -287,11 +289,7 @@ drawerNewsButton.addEventListener("click", (event) => {
   progressBar.open();
 
   //Fetch crypto,economy,stock news from the API
-  fetch(LUNARCRUSH_FEED_URL, {
-    headers: {
-        'Authorization': 'Bearer hobvdlm1ifah2j6m45lqik3b1klarlql7m219pz1'
-    }
-  })
+  fetch(NEWS_API_ENDPOINT)
   .then(response => response.json())
   .then(news => {
     console.log(news)
@@ -413,13 +411,10 @@ screenCover.addEventListener("click", (event) => {
 //When the page laods on the news screen, display the news
 document.addEventListener("DOMContentLoaded", (event) => {
   //Fetch crypto,economy,stock news from the API
-  fetch(LUNARCRUSH_FEED_URL, {
-    headers: {
-        'Authorization': 'Bearer hobvdlm1ifah2j6m45lqik3b1klarlql7m219pz1'
-    }
-  })
+  fetch(NEWS_API_ENDPOINT)
   .then(response => response.json())
   .then(news => {
+    console.log(news)
     container.appendChild(newsGrid);
     let nIndex = 0;
     shuffleArray(news.data);
