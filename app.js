@@ -146,7 +146,7 @@ let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, a
 
 //GLOBAL VARIABLES
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
-const LUNARCRUSH_FEED_URL = "https://api.lunarcrush.com/v2?data=feeds&sources=news&key=25wd02gbkx519y03yeha2f";
+const LUNARCRUSH_FEED_URL = 'https://lunarcrush.com/api3/feeds';
 const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
 let cryptoFormInput = "";
 
@@ -287,9 +287,14 @@ drawerNewsButton.addEventListener("click", (event) => {
   progressBar.open();
 
   //Fetch crypto,economy,stock news from the API
-  fetch(LUNARCRUSH_FEED_URL)
+  fetch(LUNARCRUSH_FEED_URL, {
+    headers: {
+        'Authorization': 'Bearer hobvdlm1ifah2j6m45lqik3b1klarlql7m219pz1'
+    }
+  })
   .then(response => response.json())
   .then(news => {
+    console.log(news)
     container.appendChild(newsGrid);
     let nIndex = 0;
     //shuffleArray(news.data);
