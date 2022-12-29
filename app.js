@@ -147,7 +147,7 @@ let select, nameTextfield, dateTextField, amountTextField, searchButtonRipple, a
 //GLOBAL VARIABLES
 const COINGECKO_TRENDING_URL = "https://api.coingecko.com/api/v3/search/trending";
 const LUNARCRUSH_FEED_URL = 'https://lunarcrush.com/api3/feeds';
-// const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
+const COIN_GECKO_COIN_LIST = "https://api.coingecko.com/api/v3/coins/list?include_platform=false";
 // const NEWS_API_KEY = '1a556d6f89984183a95496be6a73e481'
 // const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything?q=crypto&apiKey=1a556d6f89984183a95496be6a73e481'
 let cryptoFormInput = "";
